@@ -27,7 +27,7 @@ class PinjamController extends Controller
         $updateSewa['sewa'] = 1;
         Products::where('id', $validate['produk_id'])
             ->update($updateSewa);
-        return redirect('/katalog');
+        return redirect('/home/katalog');
     }
 
     public function riwayat()

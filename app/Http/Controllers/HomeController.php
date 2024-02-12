@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Home;
+use App\Models\Pinjam;
 use App\Models\Products;
 use App\Models\User;
 use Illuminate\Auth\Events\Validated;
@@ -56,7 +57,7 @@ class HomeController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Home $home)
+    public function show(Products $products)
     {
         //
     }
@@ -75,46 +76,27 @@ class HomeController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Home $home)
+    public function edit(Products $products)
     {
-        return view('edit', [
-            'title' => "Edit",
-            "produk" => $home
-        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Home $home)
+    public function update(Request $request, Products $products)
     {
-        $validate = $request->validate([
-            'nama' => 'required',
-            'gambar' => 'required'
-        ]);
-
-        if ($request->file('gambar')) {
-            if ($home->gambar) {
-                Storage::delete($home->gambar);
-            }
-            $validate['gambar'] = $request->file('gambar')->store('gambar');
-        }
-
-
-        Products::where('id', $home->id)->update($validate);
-
-        return redirect("/home");
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Home $home)
+    public function destroy(Request $request)
     {
-        if ($home->gambar) {
-            Storage::delete($home->gambar);
-        }
-        Products::destroy($home->id);
-        return redirect('/home');
+        $validate = $request->validate([
+            'id_produk' => "required",
+        ]);
+        Products::destroy($validate['id_produk']);
+        Pinjam::where('produk_id', $validate['id_produk'])->delete();
+        return redirect('/home/create');
     }
 }

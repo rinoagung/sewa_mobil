@@ -30,7 +30,9 @@
                         </td>
                         <td>
 
-                            @if (!$p->sewa)
+                            @if ($p->sewa == 1)
+                                <p class="text-danger">Disewa</p>
+                            @else
                                 <form method="POST" action="/pinjam" class="d-flex" role="Sewa" style="width: 200px">
                                     @csrf
                                     <input type="hidden" name="produk_id" value="{{ $p->id }}">
@@ -38,8 +40,6 @@
                                         onchange="updateHarga()" name="hari" aria-label="Sewa">
                                     <button class="btn btn-outline-success" type="submit">Sewa</button>
                                 </form>
-                            @else
-                                <p class="text-danger">Disewa</p>
                             @endif
 
                         </td>
