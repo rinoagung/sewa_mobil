@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Home;
+use App\Models\Products;
+use App\Models\User;
 use Illuminate\Auth\Events\Validated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -18,7 +20,7 @@ class HomeController extends Controller
         return view('home', [
             'title' => 'Home',
             'h1' => "Halaman Awal",
-            'produk' => Home::all()
+            'user' => User::where("id", auth()->user()->id)->first()
         ]);
     }
 
@@ -27,7 +29,10 @@ class HomeController extends Controller
      */
     public function create()
     {
-        //
+        return view('create', [
+            'title' => 'Tambah',
+            'produk' => Products::where("user_id", auth()->user()->id)->get()
+        ]);
     }
 
     /**
@@ -36,14 +41,16 @@ class HomeController extends Controller
     public function store(Request $request)
     {
         $validate = $request->validate([
-            'nama' => "required",
-            "gambar" => "required",
+            'merk' => "required",
+            "model" => "required",
+            "plat_nomor" => "required",
+            "tarif_sewa" => "required",
         ]);
-        if ($request->file('gambar')) {
-            $validate['gambar'] = $request->file('gambar')->store('gambar');
-        }
-        Home::create($validate);
-        return redirect('/home');
+
+        $validate['user_id'] = auth()->user()->id;
+        $validate['sewa'] = 0;
+        Products::create($validate);
+        return redirect('/home/create');
     }
 
     /**
@@ -52,6 +59,17 @@ class HomeController extends Controller
     public function show(Home $home)
     {
         //
+    }
+    /**
+     * Display Katalog.
+     */
+    public function katalog()
+    {
+        return view('katalog', [
+            'title' => 'Katalog',
+            'h1' => "Halaman Katalog",
+            'produk' => Products::all()
+        ]);
     }
 
     /**
@@ -83,7 +101,7 @@ class HomeController extends Controller
         }
 
 
-        Home::where('id', $home->id)->update($validate);
+        Products::where('id', $home->id)->update($validate);
 
         return redirect("/home");
     }
@@ -96,7 +114,7 @@ class HomeController extends Controller
         if ($home->gambar) {
             Storage::delete($home->gambar);
         }
-        Home::destroy($home->id);
+        Products::destroy($home->id);
         return redirect('/home');
     }
 }

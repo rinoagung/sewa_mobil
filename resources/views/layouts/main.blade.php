@@ -13,7 +13,9 @@
 
 <body>
     <nav>
-        @include('partials.navbar')
+        @auth
+            @include('partials.navbar')
+        @endauth
     </nav>
     <main class="container">
         <div class="row">
